@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sequential Circuit Design Automation System</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#e5e7eb;display:flex;align-items:center;justify-content:center;min-height:100vh;}
+#win{width:1130px;max-width:99vw;height:96vh;max-height:840px;background:#fff;border:1.5px solid #9ca3af;border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,.18);display:flex;flex-direction:column;overflow:hidden;}
+#tb{background:#374151;color:#fff;padding:5px 14px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;flex-shrink:0;border-radius:6px 6px 0 0;}
+.wb{display:flex;gap:5px;margin-left:auto;}
+.wb span{width:12px;height:12px;border-radius:50%;display:inline-block;}
+.ml{display:flex;flex:1;overflow:hidden;min-height:0;}
+.lc{width:228px;min-width:200px;border-right:1px solid #d1d5db;display:flex;flex-direction:column;overflow-y:auto;background:#fff;}
+.lc::-webkit-scrollbar{width:3px;}.lc::-webkit-scrollbar-thumb{background:#e5e7eb;}
+.sb{border:1px solid #d1d5db;margin:8px 8px 0 8px;border-radius:5px;overflow:hidden;}
+.sb:last-child{margin-bottom:8px;}
+.sh{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:4px 8px;background:#f3f4f6;border-bottom:1px solid #d1d5db;}
+.sh.r{color:#dc2626;}.sh.b{color:#2563eb;}.sh.g{color:#16a34a;}
+.sy{padding:7px 8px;}
+.rr{display:flex;align-items:center;gap:6px;margin-bottom:5px;cursor:pointer;}
+.rr:last-child{margin-bottom:0;}
+.rd{width:12px;height:12px;border-radius:50%;border:2px solid #9ca3af;flex-shrink:0;transition:.1s;}
+.rd.ar{border-color:#dc2626;background:#dc2626;}.rd.ab{border-color:#2563eb;background:#2563eb;}
+.vi{width:100%;border:1px solid #d1d5db;border-radius:4px;padding:3px 7px;font-size:12px;}
+.vi:focus{outline:none;border-color:#2563eb;}
+.lb{font-size:10px;color:#6b7280;margin-bottom:2px;}
+#st{width:100%;border-collapse:collapse;font-size:11px;}
+#st th{background:#f3f4f6;border:1px solid #d1d5db;padding:2px 4px;font-weight:600;text-align:center;}
+#st td{border:1px solid #d1d5db;padding:0;}
+.ci{width:100%;border:none;text-align:center;font-size:11px;padding:2px;background:transparent;font-family:inherit;}
+.ci:focus{outline:none;background:#eff6ff;}
+.db{background:none;border:none;cursor:pointer;color:#d1d5db;font-size:10px;padding:0 3px;}
+.db:hover{color:#dc2626;}
+.ab2{width:100%;background:none;border:1px dashed #d1d5db;border-radius:3px;font-size:10px;color:#9ca3af;cursor:pointer;padding:2px;margin-top:4px;}
+.ab2:hover{color:#16a34a;border-color:#16a34a;}
+.tb2{flex:1;font-size:10px;padding:3px;border:1px solid #d1d5db;border-radius:3px;background:#f9fafb;cursor:pointer;}
+.tb2:hover{background:#f3f4f6;}
+.mc{width:288px;min-width:250px;border-right:1px solid #d1d5db;display:flex;flex-direction:column;background:#fff;overflow:hidden;}
+.mi{padding:8px;overflow-y:auto;}
+.mi::-webkit-scrollbar{width:3px;}.mi::-webkit-scrollbar-thumb{background:#e5e7eb;}
+.oh{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 8px 4px;border-bottom:1px solid #d1d5db;}
+.oh.bl{color:#2563eb;background:#eff6ff;}.oh.gr{color:#16a34a;background:#f0fdf4;}
+.et{width:100%;border-collapse:collapse;font-size:11px;}
+.et th{background:#f3f4f6;border:1px solid #d1d5db;padding:3px 6px;font-weight:600;text-align:left;}
+.et td{border:1px solid #d1d5db;padding:3px 6px;}
+.ev{font-family:'Courier New',monospace;font-weight:600;}
+.kt{display:flex;flex-wrap:wrap;gap:3px;padding:5px 8px 2px;}
+.ktb{font-size:10px;padding:2px 8px;border-radius:3px;border:1px solid #d1d5db;cursor:pointer;background:#f9fafb;}
+.ktb.on{background:#2563eb;color:#fff;border-color:#2563eb;}
+.rc{flex:1;display:flex;flex-direction:column;background:#fff;overflow:hidden;}
+.rt{display:flex;align-items:center;gap:4px;padding:4px 10px;border-bottom:1px solid #d1d5db;background:#f9fafb;flex-shrink:0;}
+.rt .ol{font-size:10px;font-weight:700;color:#16a34a;letter-spacing:.06em;text-transform:uppercase;margin-right:auto;}
+.ib{background:#fff;border:1px solid #d1d5db;border-radius:3px;padding:2px 8px;font-size:11px;cursor:pointer;}
+.ib:hover{background:#f3f4f6;}.ib.on{background:#2563eb;color:#fff;border-color:#2563eb;}
+#bbom.on{background:#7c3aed;border-color:#7c3aed;}
+#ca{flex:1;overflow:auto;padding:10px;position:relative;}
+#ft{border-top:1px solid #d1d5db;background:#f9fafb;padding:5px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.fb{background:none;border:none;font-size:11px;color:#6b7280;cursor:pointer;}.fb:hover{color:#111827;}
+.gb{background:#2563eb;color:#fff;border:none;border-radius:4px;padding:5px 28px;font-size:13px;font-weight:700;letter-spacing:.06em;cursor:pointer;}
+.gb:hover{background:#1d4ed8;}.gb:active{transform:scale(.97);}
+#mp{border-bottom:2px solid #7c3aed;background:#faf5ff;padding:10px 16px;flex-shrink:0;}
+.mta{width:100%;border:1px solid #c4b5fd;border-radius:4px;padding:5px 8px;font-size:11px;resize:none;font-family:inherit;}
+.mta:focus{outline:none;border-color:#7c3aed;}
+.ms{background:#7c3aed;color:#fff;border:none;border-radius:4px;padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer;}
+.ms:hover{background:#6d28d9;}.ms:disabled{opacity:.5;cursor:not-allowed;}
+.ph{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#9ca3af;font-size:12px;gap:8px;}
+.kc{border:1px solid #d1d5db;text-align:center;padding:4px 8px;font-size:12px;font-family:'Courier New',monospace;min-width:34px;}
+.kc.one{background:#dcfce7;color:#15803d;font-weight:700;}
+.kc.dc{background:#fef9c3;color:#854d0e;}
+.kc.zer{color:#9ca3af;}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:none;align-items:center;justify-content:center;}
+.ov.sh{display:flex;}
+.mb{background:#fff;border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,.2);width:92vw;max-width:860px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;}
+.mh{padding:10px 16px;border-bottom:1px solid #d1d5db;display:flex;align-items:center;justify-content:space-between;background:#f9fafb;}
+.mt{font-size:13px;font-weight:700;}
+.mc2{background:none;border:none;font-size:18px;cursor:pointer;color:#6b7280;}.mc2:hover{color:#dc2626;}
+.mbd{padding:14px;overflow-y:auto;flex:1;}
+.toast{position:fixed;bottom:54px;left:50%;transform:translateX(-50%);background:#991b1b;color:#fff;padding:5px 14px;border-radius:4px;font-size:11px;z-index:200;display:none;}
+.gb2{fill:#fff;stroke:#374151;stroke-width:1.5;}
+.wr{stroke:#374151;stroke-width:1.5;fill:none;}
+.wrclk{stroke:#b45309;stroke-width:1.5;fill:none;stroke-dasharray:5,3;}
+.wrfb{stroke:#9ca3af;stroke-width:1;fill:none;stroke-dasharray:4,2;}
+.ffr{fill:#eff6ff;stroke:#2563eb;stroke-width:1.5;}
+.fft{font-size:10px;font-family:'Segoe UI',Arial;fill:#1d4ed8;}
+.sl{font-size:11px;font-family:'Segoe UI',Arial;fill:#111827;font-weight:600;}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div id="win">
+  <div id="tb">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <rect x="1" y="1" width="14" height="14" rx="2" stroke="#9ca3af" stroke-width="1.2" fill="none"/>
+      <rect x="4" y="4" width="3" height="3" fill="#60a5fa"/>
+      <rect x="9" y="4" width="3" height="3" fill="#a78bfa"/>
+      <rect x="4" y="9" width="3" height="3" fill="#a78bfa"/>
+      <rect x="9" y="9" width="3" height="3" fill="#60a5fa"/>
+    </svg>
+    Sequential Circuit Design Automation System
+    <span style="margin-left:10px;padding:2px 9px;background:rgba(255,255,255,.12);border-radius:99px;font-size:11px;font-weight:600;color:#d1d5db;letter-spacing:.02em;">1140573 洪鳴陽</span>
+    <div class="wb">
+      <span style="background:#ef4444"></span>
+      <span style="background:#f59e0b"></span>
+      <span style="background:#22c55e"></span>
+    </div>
+  </div>
+
+  <!-- Magic / Text-to-Circuit panel -->
+  <div class="ml">
+    <!-- LEFT PANEL -->
+    <div class="lc">
+      <div class="sb" style="border-color:#fca5a5;">
+        <div class="sh r">1. Model Type</div>
+        <div class="sy">
+          <div class="rr" onclick="setMdl('Mealy')"><div class="rd" id="rm"></div><span id="rml">Mealy Model</span></div>
+          <div class="rr" onclick="setMdl('Moore')"><div class="rd" id="ro"></div><span id="rol">Moore Model</span></div>
+        </div>
+      </div>
+      <div class="sb" style="border-color:#93c5fd;">
+        <div class="sh b">2. Flip-Flop Type</div>
+        <div class="sy">
+          <div class="rr" onclick="setFF('JK')"><div class="rd" id="rj"></div><span id="rjl">JK Flip-Flop</span></div>
+          <div class="rr" onclick="setFF('T')"><div class="rd" id="rt2"></div><span id="rtl">T Flip-Flop</span></div>
+          <div class="rr" onclick="setFF('D')"><div class="rd" id="rd2"></div><span id="rdl">D Flip-Flop</span></div>
+          <div class="rr" onclick="setFF('SR')"><div class="rd" id="rsr"></div><span id="rsrl">SR Flip-Flop</span></div>
+        </div>
+      </div>
+      <div class="sb" style="border-color:#86efac;">
+        <div class="sh g">3. State Table Input</div>
+        <div class="sy">
+          <div class="lb">Input Variables</div>
+          <input class="vi" id="iv" value="X" oninput="rebuildHdr()">
+          <div class="lb" style="margin-top:5px;">Output Variables</div>
+          <input class="vi" id="ov2" value="Z" oninput="rebuildHdr()">
+          <div class="lb" style="margin-top:6px;">State Table</div>
+          <div style="overflow-x:auto;">
+            <table id="st"><thead id="sth"></thead><tbody id="stb"></tbody></table>
+          </div>
+          <button class="ab2" onclick="addRow()">+ Add Row</button>
+          <div style="display:flex;gap:5px;margin-top:5px;">
+            <button class="tb2" onclick="clrTbl()">Clear Table</button>
+            <button class="tb2" onclick="loadEx()">Load Example</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MIDDLE PANEL -->
+    <div class="mc">
+      <div class="oh bl">Output 1: Flip-Flop Input Equations</div>
+      <div class="mi" style="flex:none;max-height:46%;border-bottom:1px solid #d1d5db;">
+        <div id="ep" style="font-size:11px;color:#9ca3af;padding:14px 0;text-align:center;font-style:italic;">Click GENERATE</div>
+      </div>
+      <div class="oh gr">K-Map Visualization</div>
+      <div class="kt" id="ktabs"></div>
+      <div class="mi">
+        <div id="kp" style="font-size:11px;color:#9ca3af;padding:8px 0;text-align:center;font-style:italic;">K-Maps appear after generation</div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="rc">
+      <div class="rt">
+        <span class="ol">Output 2: Sequential Circuit Diagram</span>
+        <button class="ib on" id="bc" onclick="swView('circuit')">Circuit</button>
+        <button class="ib" id="bsd" onclick="swView('state')">State Diagram</button>
+        <button class="ib" id="btd" onclick="swView('timing')">Timing</button>
+        <button class="ib" id="bbom" onclick="swView('bom')">&#128204; BOM</button>
+        <span style="width:4px;"></span>
+        <button class="ib" onclick="chZoom(.2)">+</button>
+        <button class="ib" onclick="chZoom(-.2)">&#8722;</button>
+        <button class="ib" onclick="rstZoom()">&#8857;</button>
+        <span id="zl" style="font-size:10px;color:#9ca3af;min-width:34px;">100%</span>
+      </div>
+      <div id="ca">
+        <div class="ph" id="ph">
+          <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+            <rect x="4" y="4" width="44" height="44" rx="5" stroke="#d1d5db" stroke-width="2"/>
+            <rect x="14" y="14" width="9" height="9" fill="#e5e7eb"/>
+            <rect x="29" y="14" width="9" height="9" fill="#e5e7eb"/>
+            <rect x="14" y="29" width="9" height="9" fill="#e5e7eb"/>
+            <rect x="29" y="29" width="9" height="9" fill="#e5e7eb"/>
+          </svg>
+          Fill state table and click GENERATE
+        </div>
+        <div id="cc" style="display:none;transform-origin:top left;transition:transform .15s;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ft">
+    <div style="flex:1;display:flex;justify-content:center;">
+      <button class="gb" onclick="doGen()">GENERATE</button>
+    </div>
+    <button class="fb" onclick="doExport()">&#8681; Export PDF</button>
+    <button class="fb">&#9432; About</button>
+  </div>
+</div>
+
+<!-- State Diagram Modal -->
+<div class="ov" id="sdm">
+  <div class="mb">
+    <div class="mh">
+      <span class="mt">&#11044; State Diagram</span>
+      <button class="mc2" onclick="closeMdl('sdm')">&#215;</button>
+    </div>
+    <div class="mbd" id="sdb" style="overflow-x:auto;text-align:center;"></div>
+  </div>
+</div>
+
+<!-- Timing Diagram Modal -->
+<div class="ov" id="tdm">
+  <div class="mb">
+    <div class="mh">
+      <span class="mt">&#9201; Timing Diagram Simulator</span>
+      <button class="mc2" onclick="closeMdl('tdm')">&#215;</button>
+    </div>
+    <div class="mbd">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+        <span style="font-size:12px;">Input sequence (comma-separated 0/1):</span>
+        <input id="tseq" style="border:1px solid #d1d5db;border-radius:4px;padding:3px 8px;font-size:12px;font-family:'Courier New',monospace;width:180px;" value="0,1,0,0,1,1,1,0">
+        <button onclick="runTD()" style="background:#2563eb;color:#fff;border:none;border-radius:4px;padding:4px 14px;font-size:12px;cursor:pointer;">Simulate</button>
+      </div>
+      <div id="tdo" style="overflow-x:auto;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// Quine-McCluskey minimisation
+// ═══════════════════════════════════════════════
+function bs(n,b){return n.toString(2).padStart(b,'0');}
+function canMg(a,b){if(a.mask!==b.mask)return false;const d=a.term^b.term;return d&&!(d&(d-1));}
+function mgP(a,b){return{term:a.term&b.term,mask:a.mask|(a.term^b.term),mints:[...new Set([...a.mints,...b.mints])]};}
+function i2e(imp,vars){
+  const bits=vars.length,p=[];
+  for(let i=0;i<bits;i++){const bp=bits-1-i;if((imp.mask>>bp)&1)continue;p.push(((imp.term>>bp)&1)?vars[i]:vars[i]+"'");}
+  return p.length?p.join('\u00b7'):'1';
+}
+function qm(mints,dcs,vars){
+  const all=[...new Set([...mints,...dcs])];
+  if(!all.length||!mints.length)return'0';
+  let imps=all.map(m=>({term:m,mask:0,mints:[m]}));
+  const primes=[];
+  while(imps.length){
+    const next=[],used=new Set();
+    for(let i=0;i<imps.length;i++)for(let j=i+1;j<imps.length;j++)if(canMg(imps[i],imps[j])){next.push(mgP(imps[i],imps[j]));used.add(i);used.add(j);}
+    for(let i=0;i<imps.length;i++)if(!used.has(i))primes.push(imps[i]);
+    const seen=new Set();
+    imps=next.filter(p=>{const k=p.term+','+p.mask;if(seen.has(k))return false;seen.add(k);return true;});
+  }
+  const cov={};mints.forEach(m=>{cov[m]=[];});
+  primes.forEach((p,i)=>p.mints.forEach(m=>{if(cov[m]!==undefined)cov[m].push(i);}));
+  const sel=new Set();
+  mints.forEach(m=>{if(cov[m]&&cov[m].length===1)sel.add(cov[m][0]);});
+  let rem=new Set(mints.filter(m=>![...sel].some(i=>primes[i].mints.includes(m))));
+  while(rem.size){
+    let best=-1,bc=0;
+    primes.forEach((p,i)=>{if(sel.has(i))return;const c=p.mints.filter(m=>rem.has(m)).length;if(c>bc){best=i;bc=c;}});
+    if(best===-1)break;sel.add(best);primes[best].mints.forEach(m=>rem.delete(m));
+  }
+  const terms=[...sel].map(i=>i2e(primes[i],vars));
+  return terms.length?terms.join('+'):'0';
+}
+
+// ═══════════════════════════════════════════════
+// Excitation tables
+// ═══════════════════════════════════════════════
+function jkEx(Q,Qn){if(!Q&&!Qn)return{J:0,K:'X'};if(!Q&&Qn)return{J:1,K:'X'};if(Q&&!Qn)return{J:'X',K:1};return{J:'X',K:0};}
+function tEx(Q,Qn){return{T:Q===Qn?0:1};}
+function dEx(Q,Qn){return{D:Qn};}
+function srEx(Q,Qn){
+  if(Q===0&&Qn===0)return{S:0,R:'X'};
+  if(Q===0&&Qn===1)return{S:1,R:0};
+  if(Q===1&&Qn===0)return{S:0,R:1};
+  return{S:'X',R:0};
+}
+
+// ═══════════════════════════════════════════════
+// Derive equations from state table
+// ═══════════════════════════════════════════════
+function derive(rows,mdl,fft,ivv,ovv){
+  const states=[...new Set(rows.map(r=>r.ps))].sort();
+  const nB=Math.ceil(Math.log2(Math.max(states.length,2)));
+  const enc={};states.forEach((s,i)=>enc[s]=i);
+  const nI=ivv.length;
+  const sV=[];for(let i=nB-1;i>=0;i--)sV.push('Q'+i);
+  const allV=[...sV,...ivv];
+  const total=1<<(nB+nI);
+  const ffN=[...sV];
+  const fTT={},oTT={};
+  ffN.forEach(n=>{
+    if(fft==='JK'){fTT['J_'+n]=new Array(total).fill('X');fTT['K_'+n]=new Array(total).fill('X');}
+    else if(fft==='SR'){fTT['S_'+n]=new Array(total).fill('X');fTT['R_'+n]=new Array(total).fill('X');}
+    else if(fft==='D'){fTT['D_'+n]=new Array(total).fill('X');}
+    else{fTT['T_'+n]=new Array(total).fill('X');}
+  });
+  ovv.forEach(v=>oTT[v]=new Array(total).fill('X'));
+  rows.forEach(row=>{
+    const psC=enc[row.ps],nsC=enc[row.ns];
+    if(psC===undefined||nsC===undefined)return;
+    let idx=psC<<nI;
+    ivv.forEach((v,i)=>{const val=parseInt(row.inputs[v]);if(!isNaN(val))idx|=(val<<(nI-1-i));});
+    ffN.forEach((name,bi)=>{
+      const qBit=nB-1-bi,Q=(psC>>qBit)&1,Qn=(nsC>>qBit)&1;
+      if(fft==='JK'){const e=jkEx(Q,Qn);fTT['J_'+name][idx]=e.J;fTT['K_'+name][idx]=e.K;}
+      else if(fft==='SR'){const e=srEx(Q,Qn);fTT['S_'+name][idx]=e.S;fTT['R_'+name][idx]=e.R;}
+      else if(fft==='D'){fTT['D_'+name][idx]=dEx(Q,Qn).D;}
+      else{fTT['T_'+name][idx]=tEx(Q,Qn).T;}
+    });
+    ovv.forEach(v=>{const val=parseInt(row.outputs[v]);if(!isNaN(val))oTT[v][idx]=val;});
+  });
+  const eqs={},kmd={};
+  Object.entries(fTT).forEach(([nm,tt])=>{
+    const mints=tt.map((v,i)=>v===1?i:-1).filter(x=>x>=0);
+    const dcs=tt.map((v,i)=>v==='X'?i:-1).filter(x=>x>=0);
+    eqs[nm]=qm(mints,dcs,allV);kmd[nm]={tt,vars:allV};
+  });
+  ovv.forEach(v=>{
+    const tt=oTT[v];
+    const mints=tt.map((v2,i)=>v2===1?i:-1).filter(x=>x>=0);
+    const dcs=tt.map((v2,i)=>v2==='X'?i:-1).filter(x=>x>=0);
+    eqs['Z_'+v]=qm(mints,dcs,allV);kmd['Z_'+v]={tt,vars:allV};
+  });
+  return{eqs,kmd,enc,nB,allV,ffN,sV};
+}
+
+// ═══════════════════════════════════════════════
+// App state
+// ═══════════════════════════════════════════════
+let S={mdl:'Mealy',fft:'JK',tbl:[],res:null,kmap:null,zoom:1,_lastCircuit:null};
+const EX={mdl:'Mealy',fft:'JK',iv:'X',ov:'Z',rows:[
+  {ps:'A',inputs:{X:'0'},ns:'A',outputs:{Z:'0'}},
+  {ps:'A',inputs:{X:'1'},ns:'B',outputs:{Z:'0'}},
+  {ps:'B',inputs:{X:'0'},ns:'C',outputs:{Z:'1'}},
+  {ps:'B',inputs:{X:'1'},ns:'A',outputs:{Z:'0'}},
+  {ps:'C',inputs:{X:'0'},ns:'A',outputs:{Z:'1'}},
+  {ps:'C',inputs:{X:'1'},ns:'C',outputs:{Z:'1'}},
+]};
+
+function giv(){return document.getElementById('iv').value.split(',').map(s=>s.trim()).filter(Boolean);}
+function gov(){return document.getElementById('ov2').value.split(',').map(s=>s.trim()).filter(Boolean);}
+
+function setMdl(m){
+  S.mdl=m;
+  ['Mealy','Moore'].forEach(x=>{
+    document.getElementById(x==='Mealy'?'rm':'ro').className='rd'+(x===m?' ar':'');
+    document.getElementById(x==='Mealy'?'rml':'rol').style.fontWeight=x===m?'600':'400';
+  });
+}
+function setFF(f){
+  S.fft=f;
+  const MAP={JK:{r:'rj',l:'rjl'},T:{r:'rt2',l:'rtl'},D:{r:'rd2',l:'rdl'},SR:{r:'rsr',l:'rsrl'}};
+  Object.entries(MAP).forEach(([k,v])=>{
+    const re=document.getElementById(v.r),le=document.getElementById(v.l);
+    if(re)re.className='rd'+(k===f?' ab':'');
+    if(le)le.style.fontWeight=k===f?'600':'400';
+  });
+}
+function rebuildHdr(){
+  const iv=giv(),ov=gov();
+  document.getElementById('sth').innerHTML='<tr><th>PS</th>'+iv.map(v=>'<th style="color:#2563eb">'+v+'</th>').join('')+'<th>NS</th>'+ov.map(v=>'<th style="color:#dc2626">'+v+'</th>').join('')+'<th></th></tr>';
+  renderTbl();
+}
+function renderTbl(){
+  const iv=giv(),ov=gov();
+  document.getElementById('stb').innerHTML=S.tbl.map((row,i)=>'<tr>'
+    +'<td><input class="ci" value="'+row.ps+'" oninput="upd('+i+',\'ps\',this.value)"></td>'
+    +iv.map(v=>'<td><input class="ci" style="color:#2563eb;width:28px" value="'+(row.inputs[v]??'0')+'" oninput="upd('+i+',\'in_'+v+'\',this.value)"></td>').join('')
+    +'<td><input class="ci" value="'+row.ns+'" oninput="upd('+i+',\'ns\',this.value)"></td>'
+    +ov.map(v=>'<td><input class="ci" style="color:#dc2626;width:28px" value="'+(row.outputs[v]??'0')+'" oninput="upd('+i+',\'out_'+v+'\',this.value)"></td>').join('')
+    +'<td><button class="db" onclick="delRow('+i+')">&#x2715;</button></td></tr>').join('');
+}
+function upd(i,f,v){
+  const r=S.tbl[i];
+  if(f==='ps')r.ps=v;else if(f==='ns')r.ns=v;
+  else if(f.startsWith('in_'))r.inputs[f.slice(3)]=v;
+  else r.outputs[f.slice(4)]=v;
+}
+function addRow(){
+  const iv=giv(),ov=gov(),last=S.tbl[S.tbl.length-1];
+  const inp={},out={};iv.forEach(v=>inp[v]='0');ov.forEach(v=>out[v]='0');
+  S.tbl.push({ps:last?.ps||'A',inputs:inp,ns:'A',outputs:out});renderTbl();
+}
+function delRow(i){S.tbl.splice(i,1);renderTbl();}
+function clrTbl(){
+  S.tbl=[];S.res=null;S._lastCircuit=null;renderTbl();
+  document.getElementById('ep').innerHTML='<div style="font-size:11px;color:#9ca3af;padding:14px 0;text-align:center;font-style:italic;">Click GENERATE</div>';
+  document.getElementById('kp').innerHTML='<div style="font-size:11px;color:#9ca3af;padding:8px 0;text-align:center;font-style:italic;">K-Maps appear after generation</div>';
+  document.getElementById('ktabs').innerHTML='';
+  document.getElementById('cc').style.display='none';
+  document.getElementById('ph').style.display='flex';
+}
+function loadEx(){
+  setMdl(EX.mdl);setFF(EX.fft);
+  document.getElementById('iv').value=EX.iv;
+  document.getElementById('ov2').value=EX.ov;
+  S.tbl=EX.rows.map(r=>({ps:r.ps,ns:r.ns,inputs:{...r.inputs},outputs:{...r.outputs}}));
+  rebuildHdr();
+}
+
+// ═══════════════════════════════════════════════
+// K-Map renderer
+// ═══════════════════════════════════════════════
+const G2=[0,1,3,2];
+function renderKmap(key){
+  if(!S.res)return;
+  const km=S.res.kmd[key],eq=S.res.eqs[key]||'&#8212;';
+  const vars=km.vars,tt=km.tt,nV=vars.length;
+  let rV,cV,rows,cols;
+  if(nV<=2){rV=[vars[0]];cV=nV===2?[vars[1]]:[];rows=2;cols=nV===2?2:1;}
+  else if(nV===3){rV=[vars[0]];cV=[vars[1],vars[2]];rows=2;cols=4;}
+  else{rV=[vars[0],vars[1]];cV=[vars[2],vars[3]];rows=4;cols=4;}
+  const rG=rows===4?G2:[0,1],cG=cols===4?G2:cols===2?[0,1]:[0];
+  const cL=cG.map(g=>bs(g,cV.length)),rL=rG.map(g=>bs(g,rV.length));
+  let t='<div style="font-size:10px;color:#6b7280;margin-bottom:3px;">'+key+'</div>';
+  t+='<table style="border-collapse:collapse;"><thead><tr>'
+    +'<th class="kc" style="background:#f9fafb;color:#9ca3af;font-size:9px;">'+rV.join('')+'\\'+cV.join('')+'</th>'
+    +cL.map(l=>'<th class="kc" style="background:#f9fafb;">'+l+'</th>').join('')+'</tr></thead><tbody>';
+  for(let r=0;r<rows;r++){
+    t+='<tr><td class="kc" style="background:#f9fafb;">'+rL[r]+'</td>';
+    for(let c=0;c<Math.max(cols,1);c++){
+      const m=(rG[r]<<cV.length)|(cG[c]??0);
+      const val=tt[m];const cls=val===1?'one':val==='X'?'dc':'zer';
+      t+='<td class="kc '+cls+'">'+(val===undefined?'-':String(val))+'</td>';
+    }
+    t+='</tr>';
+  }
+  t+='</tbody></table>';
+  t+='<div style="margin-top:5px;font-size:10px;font-family:\'Courier New\',monospace;color:#15803d;background:#f0fdf4;border-radius:3px;padding:3px 7px;">(Simplified) '+key+' = '+eq+'</div>';
+  t+='<div style="margin-top:4px;font-size:9px;color:#9ca3af;"><span style="color:#15803d">&#9632;</span> 1 &nbsp;<span style="color:#854d0e">&#9632;</span> X &nbsp;<span style="color:#d1d5db">&#9632;</span> 0</div>';
+  document.getElementById('kp').innerHTML=t;
+}
+function swKmap(k){
+  S.kmap=k;
+  document.querySelectorAll('.ktb').forEach(b=>b.classList.toggle('on',b.dataset.key===k));
+  renderKmap(k);
+}
+
+// ═══════════════════════════════════════════════
+// Equations panel
+// ═══════════════════════════════════════════════
+function renderEq(res){
+  const{eqs,ffN}=res,fft=S.fft,ov=gov();
+  let h='<div style="font-size:10px;color:#6b7280;margin-bottom:5px;">State Variables: '+ffN.join(' ')+'</div>';
+  h+='<table class="et"><thead><tr><th>Flip-Flop</th><th>Input</th><th>Equation</th></tr></thead><tbody>';
+  ffN.forEach((nm,idx)=>{
+    const pinNum=nm.replace(/[^0-9]/g,'');
+    const rows2=fft==='JK'
+      ?[{lb:'J'+pinNum,key:'J_'+nm,col:'#2563eb'},{lb:'K'+pinNum,key:'K_'+nm,col:'#dc2626'}]
+      :fft==='SR'
+      ?[{lb:'S'+pinNum,key:'S_'+nm,col:'#16a34a'},{lb:'R'+pinNum,key:'R_'+nm,col:'#dc2626'}]
+      :fft==='D'
+      ?[{lb:'D'+pinNum,key:'D_'+nm,col:'#0891b2'}]
+      :[{lb:'T'+pinNum,key:'T_'+nm,col:'#7c3aed'}];
+    rows2.forEach((r,ri)=>{
+      h+='<tr'+(ri===0?' style="border-top:2px solid #e5e7eb"':'')+'>'+
+        (ri===0?'<td rowspan="'+rows2.length+'" style="vertical-align:middle;">FF for '+nm+'</td>':'')+
+        '<td style="color:#6b7280">'+r.lb+'</td>'+
+        '<td class="ev" style="color:'+r.col+'">'+(eqs[r.key]||'&#8212;')+'</td></tr>';
+    });
+  });
+  ov.forEach(v=>{
+    h+='<tr style="border-top:2px solid #fef3c7"><td style="color:#6b7280">Output</td><td style="color:#6b7280">'+v+'</td><td class="ev" style="color:#b45309">'+(eqs['Z_'+v]||'&#8212;')+'</td></tr>';
+  });
+  h+='</tbody></table>';
+  document.getElementById('ep').innerHTML=h;
+}
+
+// ═══════════════════════════════════════════════
+// Parse equation string into AST
+// ═══════════════════════════════════════════════
+function parseEq(str){
+  str=(str||'').trim();
+  if(!str||str==='0'||str==='1')return{op:'CONST',val:str||'0'};
+  const terms=str.split('+').map(s=>s.trim()).filter(Boolean);
+  if(terms.length>1)return{op:'OR',args:terms.map(parseTerm)};
+  return parseTerm(str);
+}
+function parseTerm(str){
+  str=str.trim();
+  const factors=str.split('\u00b7').map(s=>s.trim()).filter(Boolean);
+  if(factors.length>1)return{op:'AND',args:factors.map(parseFactor)};
+  return parseFactor(str);
+}
+function parseFactor(s){
+  s=s.trim();
+  if(s.endsWith("'"))return{op:'NOT',arg:{op:'VAR',name:s.slice(0,-1)}};
+  return{op:'VAR',name:s};
+}
+
+// ═══════════════════════════════════════════════
+// Gate SVG primitives
+// ═══════════════════════════════════════════════
+function andG(x,y,w,h){
+  return '<path d="M'+x+','+y+' L'+(x+w*.42)+','+y+' Q'+(x+w)+','+y+' '+(x+w)+','+(y+h/2)+' Q'+(x+w)+','+(y+h)+' '+(x+w*.42)+','+(y+h)+' L'+x+','+(y+h)+' Z" class="gb2"/>'
+    +'<text x="'+(x+w*.38)+'" y="'+(y+h/2+4)+'" text-anchor="middle" font-size="9" font-family="\'Segoe UI\',Arial" fill="#374151">&amp;</text>';
+}
+function orG(x,y,w,h){
+  return '<path d="M'+x+','+y+' Q'+(x+w*.32)+','+y+' '+(x+w)+','+(y+h/2)+' Q'+(x+w*.32)+','+(y+h)+' '+x+','+(y+h)+' Q'+(x+w*.42)+','+(y+h/2)+' '+x+','+y+' Z" class="gb2"/>'
+    +'<text x="'+(x+w*.56)+'" y="'+(y+h/2+4)+'" text-anchor="middle" font-size="9" font-family="\'Segoe UI\',Arial" fill="#374151">\u22651</text>';
+}
+function notG(x,y,w,h){
+  return '<polygon points="'+x+','+y+' '+(x+w-5)+','+(y+h/2)+' '+x+','+(y+h)+'" class="gb2"/>'
+    +'<circle cx="'+(x+w-1)+'" cy="'+(y+h/2)+'" r="4" class="gb2"/>';
+}
+
+// ═══════════════════════════════════════════════
+// Bus-based circuit drawing system
+// ═══════════════════════════════════════════════
+let _buses={};
+let _busTop=0,_busBot=0;
+
+function drawBus(x,label,topY,botY,color){
+  color=color||'#1d4ed8';
+  const weight=label.includes("'")?1.5:2;
+  let s='<line x1="'+x+'" y1="'+topY+'" x2="'+x+'" y2="'+botY
+      +'" stroke="'+color+'" stroke-width="'+weight+'" opacity=".6"/>';
+  if(label){
+    s+='<text x="'+x+'" y="'+(topY-5)+'" text-anchor="middle" font-size="11"'
+      +' font-family="\'Segoe UI\',Arial" fill="'+color+'" font-weight="700">'+label+'</text>';
+  }
+  return s;
+}
+
+function tapBus(busX,tapY,targetX,color){
+  color=color||'#374151';
+  return '<line x1="'+busX+'" y1="'+tapY+'" x2="'+targetX+'" y2="'+tapY
+      +'" stroke="'+color+'" stroke-width="1.5" fill="none"/>'
+      +'<circle cx="'+busX+'" cy="'+tapY+'" r="2.8" fill="'+color+'"/>';
+}
+
+// layoutBus: recursively place gates, tapping from buses
+// ── treeHeight: compute vertical space required by a subtree ──
+function treeHeight(node){
+  if(!node||node.op==='CONST'||node.op==='VAR')return 32;
+  if(node.op==='NOT')return treeHeight(node.arg)+10;
+  const args=node.args||[];
+  if(!args.length)return 32;
+  const GAP=20;
+  const childH=args.map(a=>Math.max(treeHeight(a),32));
+  return childH.reduce((s,h)=>s+h,0)+(args.length-1)*GAP;
+}
+
+// Registry of placed gate bounding boxes for this circuit render,
+// used to detour connecting wires around gates from sibling subtrees.
+let _gateBoxes=[];
+
+function boxesIntersectSeg(x1,y1,x2,y2,boxes,excludeAfterIdx){
+  // Returns true if the axis-aligned segment crosses any box in `boxes`
+  // (only boxes added BEFORE excludeAfterIdx, i.e. by earlier siblings).
+  for(let bi=0;bi<excludeAfterIdx;bi++){
+    const[bx1,by1,bx2,by2]=boxes[bi];
+    if(x1===x2){
+      const x=x1,ylo=Math.min(y1,y2),yhi=Math.max(y1,y2);
+      if(bx1<x&&x<bx2&&Math.max(ylo,by1)<Math.min(yhi,by2))return true;
+    }else if(y1===y2){
+      const y=y1,xlo=Math.min(x1,x2),xhi=Math.max(x1,x2);
+      if(by1<y&&y<by2&&Math.max(xlo,bx1)<Math.min(xhi,bx2))return true;
+    }
+  }
+  return false;
+}
+
+const MIN_HORIZONTAL_GAP=36; // strict minimum clearance between any two gate bounding boxes
+
+function layoutBus(node,gateLeft,gateRight,cy){
+  const GW=44,GH=32,NW=28,NH=20;
+
+  // ── Leaf: tap from bus or draw label ──
+  if(node.op==='CONST'||node.op==='VAR'){
+    const name=node.op==='CONST'?node.val:node.name;
+    const busInfo=_buses[name];
+    if(busInfo){
+      const outX=Math.min(gateRight,gateLeft+14);
+      return{elms:tapBus(busInfo.x,cy,outX,busInfo.color),ox:outX,oy:cy};
+    }
+    const lw=name.length*7;
+    const outX=Math.min(gateRight,gateLeft+lw+8);
+    return{
+      elms:'<text x="'+gateLeft+'" y="'+(cy+4)+'" font-size="11" font-family="Segoe UI,Arial" fill="#374151">'+name+'</text>'
+          +'<line x1="'+(gateLeft+lw)+'" y1="'+cy+'" x2="'+outX+'" y2="'+cy+'" class="wr"/>',
+      ox:outX,oy:cy};
+  }
+
+  // ── NOT gate ──
+  // Strict rule: the NOT gate's X position must always leave at least
+  // MIN_HORIZONTAL_GAP of clearance from gateRight (its parent's pin/junction
+  // column), so the inverter body can never overlap the element to its right.
+  if(node.op==='NOT'){
+    const gx=gateRight-NW-4-MIN_HORIZONTAL_GAP+MIN_HORIZONTAL_GAP; // gx = gateRight-NW-4 (kept explicit for clarity)
+    const gy=cy-NH/2;
+    // Child (the NOT's operand) must start at least MIN_HORIZONTAL_GAP left
+    // of this NOT gate's own left edge, guaranteeing no horizontal overlap
+    // between the NOT gate and whatever feeds into it.
+    const childGateRight=gx-MIN_HORIZONTAL_GAP;
+    const inner=layoutBus(node.arg,gateLeft,childGateRight,cy);
+    const wireIn=inner.ox<gx
+      ?'<line x1="'+inner.ox+'" y1="'+inner.oy+'" x2="'+gx+'" y2="'+inner.oy+'" class="wr"/>':'';
+    _gateBoxes.push([gx,gy,gx+NW+4,gy+NH]);
+    return{elms:inner.elms+wireIn+notG(gx,gy,NW,NH),ox:gx+NW+4,oy:cy};
+  }
+
+  // ── AND / OR: use treeHeight to allocate non-overlapping vertical bands ──
+  const args=node.args||[];
+  const n=args.length;
+  if(!n)return{elms:'',ox:gateLeft,oy:cy};
+
+  const gx=gateRight-GW-4;
+  const gy=cy-GH/2;
+  const gateInset=node.op==='OR'?5:0;
+
+  // pinX: where every child's connecting wire must terminate horizontally
+  const pinX=gx+gateInset;
+
+  // jx (junction/turn column): STRICTLY clamped to sit between
+  // [pinX-20, pinX-15] so the vertical turn never lands inside the gate's
+  // own drawing region, and is also kept at least MIN_HORIZONTAL_GAP left
+  // of pinX to guarantee a visible, non-overlapping final approach segment.
+  // We additionally stagger multiple children's jx columns (12px apart)
+  // so sibling input wires never run on top of one another, while every
+  // staggered column still respects the same min/max clamp band.
+  const jxMax=pinX-15;
+  const jxMin=pinX-20;
+  // subRight: the rightmost X any child subtree (and its own gates) may
+  // occupy — must clear the gate body by MIN_HORIZONTAL_GAP.
+  const subRight=gx-MIN_HORIZONTAL_GAP;
+
+  // Allocate height for each child — generous GAP prevents sibling subtrees
+  // (and their internal gates) from ever sharing a Y-band.
+  const GAP=36;
+  const childH=args.map(a=>Math.max(treeHeight(a),32));
+  const totalH=childH.reduce((s,h)=>s+h,0)+(n-1)*GAP;
+
+  const centers=[];
+  const bandTop=[],bandBot=[];
+  let yTop=cy-totalH/2;
+  args.forEach((a,i)=>{
+    bandTop.push(yTop);
+    centers.push(yTop+childH[i]/2);
+    bandBot.push(yTop+childH[i]);
+    yTop+=childH[i]+GAP;
+  });
+
+  // Gate input pin positions on left face
+  const pinYs=args.map((_,i)=>gy+5+i*(GH-10)/Math.max(n-1,1));
+
+  // Junction columns: clamp every jx into [jxMin,jxMax] (≈15-20px left of
+  // the pin), then stagger within that narrow band so multiple inputs don't
+  // share the exact same column (their vertical segments would overlap).
+  const bandWidth=jxMax-jxMin; // typically 5px — enough for a few px of stagger
+  const jCols=args.map((_,i)=>{
+    const raw=jxMax-(n-1-i)*Math.min(1.5,bandWidth/Math.max(n-1,1));
+    return Math.max(jxMin,Math.min(jxMax,raw));
+  });
+
+  let elms='';
+
+  args.forEach((arg,i)=>{
+    const boxesBefore=_gateBoxes.length;
+    // Each child subtree is built within [gateLeft, subRight] — never
+    // allowed past subRight, which already has MIN_HORIZONTAL_GAP clearance
+    // from this gate's own body (gx). This guarantees no child gate (e.g.
+    // an inline NOT feeding this AND/OR) can ever horizontally overlap gx.
+    const sub=layoutBus(arg,gateLeft,subRight,centers[i]);
+    elms+=sub.elms;
+    const jx=jCols[i];
+
+    let routeY=sub.oy;
+    let detour='';
+    if(boxesIntersectSeg(sub.ox,sub.oy,jx,sub.oy,_gateBoxes,boxesBefore)){
+      const ownTop=bandTop[i],ownBot=bandBot[i];
+      const cand1=Math.abs(sub.oy-ownTop)<Math.abs(sub.oy-ownBot)?ownTop+4:ownBot-4;
+      const cand2=cand1===ownTop+4?ownBot-4:ownTop+4;
+      if(!boxesIntersectSeg(sub.ox,cand1,jx,cand1,_gateBoxes,boxesBefore)){
+        routeY=cand1;
+      }else if(!boxesIntersectSeg(sub.ox,cand2,jx,cand2,_gateBoxes,boxesBefore)){
+        routeY=cand2;
+      }else{
+        routeY=cand1;
+      }
+      detour+='<line x1="'+sub.ox+'" y1="'+sub.oy+'" x2="'+sub.ox+'" y2="'+routeY+'" class="wr"/>';
+    }
+
+    elms+=detour;
+    elms+='<line x1="'+sub.ox+'" y1="'+routeY+'" x2="'+jx+'" y2="'+routeY+'" class="wr"/>';
+    if(Math.abs(routeY-pinYs[i])>1)
+      elms+='<line x1="'+jx+'" y1="'+routeY+'" x2="'+jx+'" y2="'+pinYs[i]+'" class="wr"/>';
+    // Final approach: jx → pinX at pinYs[i]. jx is guaranteed (by the clamp
+    // above) to sit 15-20px left of pinX, so this segment can never start
+    // or end inside the gate's own drawn region.
+    elms+='<line x1="'+jx+'" y1="'+pinYs[i]+'" x2="'+pinX+'" y2="'+pinYs[i]+'" class="wr"/>';
+  });
+
+  _gateBoxes.push([gx,gy,gx+GW,gy+GH]);
+  elms+=(node.op==='AND'?andG:orG)(gx,gy,GW,GH);
+  return{elms,ox:gx+GW,oy:cy};
+}
+function wireToPin(ox,oy,dx,dy){
+  if(Math.abs(oy-dy)<2){
+    return'<line x1="'+ox+'" y1="'+oy+'" x2="'+dx+'" y2="'+dy+'" class="wr"/>';
+  }
+  // Junction X should sit 15-20px left of the destination pin (dx) so the
+  // final approach segment has clear visual separation — but it must NEVER
+  // be placed behind the source (ox), which would draw the wire backward
+  // through the gate it just exited. Only apply the dx-relative clamp when
+  // there is enough room between ox and dx for it to make sense.
+  let jx=ox+(dx-ox)*0.65;
+  const jxMax=dx-15, jxMin=dx-20;
+  if(ox<jxMin){
+    // Plenty of room: clamp into the preferred 15-20px-before-dx band.
+    jx=Math.max(jxMin,Math.min(jxMax,jx));
+  }
+  // else: not enough room to enforce the band without going behind ox —
+  // keep the proportional jx (still strictly between ox and dx).
+  return'<line x1="'+ox+'" y1="'+oy+'" x2="'+jx+'" y2="'+oy+'" class="wr"/>'
+      +'<line x1="'+jx+'" y1="'+oy+'" x2="'+jx+'" y2="'+dy+'" class="wr"/>'
+      +'<line x1="'+jx+'" y1="'+dy+'" x2="'+dx+'" y2="'+dy+'" class="wr"/>';
+}
+
+// ═══════════════════════════════════════════════
+// buildCircuit — compact bus-based layout
+// ═══════════════════════════════════════════════
+function buildCircuit(res,fft,ivv,ovv){
+  const{eqs,ffN,nB,enc}=res;
+  const ffc=ffN.length;
+
+  const TOP=38;
+  const W=820;
+
+  // Compute dynamic row height based on equation complexity
+  function eqHeight(key){
+    const eq=eqs[key]||'0';
+    return Math.max(treeHeight(parseEq(eq)),40);
+  }
+  const hasDual=(fft==='JK'||fft==='SR');
+  // Each FF row needs room for 2 gate networks (JK/SR) or 1 (T/D)
+  const rowHeights=ffN.map(nm=>{
+    if(hasDual){
+      const h1=eqHeight((fft==='JK'?'J_':'S_')+nm);
+      const h2=eqHeight((fft==='JK'?'K_':'R_')+nm);
+      return Math.max(h1+h2+80, 160);
+    }else{
+      const h1=eqHeight((fft==='D'?'D_':'T_')+nm);
+      return Math.max(h1+60, 110);
+    }
+  });
+  const ROW=Math.max(...rowHeights, hasDual?160:110);
+  const H=Math.max(480,ffc*ROW+260);  // extra bottom margin for feedback-return wires
+
+  // FF block — compact
+  const FFX=420,FFW=74;
+  const STUB_X=FFX-14;
+
+  // Pin offsets per FF type
+  const PIN={
+    JK:{p1:40,p2:58,clk:76,h:90},
+    T: {p1:38,p2:null,clk:56,h:72},
+    D: {p1:38,p2:null,clk:56,h:72},
+    SR:{p1:40,p2:58,clk:76,h:90},
+  };
+  const pinCfg=PIN[fft]||PIN.JK;
+
+  // Bus layout
+  const BUS_START_X=36;
+  const BUS_SPACING=28;
+  const numIV=ivv.length;
+  const numFF=ffN.length;
+  const ivBusX=ivv.map((_,i)=>BUS_START_X+i*BUS_SPACING);
+  // X' bus must be placed far enough right to clear the NOT gate
+  // NOT gate: tap at ivBusX[i], gate body at +20, output at +52 → X' at +60
+  const XP_OFFSET=60;
+  const ivnBusX=ivv.map((_,i)=>ivBusX[i]+XP_OFFSET);
+  // Q buses start after all X and X' buses
+  const qBusStart=ivBusX.length>0 ? ivnBusX[ivnBusX.length-1]+BUS_SPACING : BUS_START_X;
+  const qBusX=ffN.map((_,i)=>qBusStart+i*BUS_SPACING);
+  const GATE_LEFT=qBusX.length>0 ? qBusX[qBusX.length-1]+BUS_SPACING+10 : BUS_START_X+BUS_SPACING+10;
+  const GATE_RIGHT=STUB_X-10;
+
+  const BUS_TOP=TOP+16;
+  const BUS_BOT=H-48;
+
+  // Populate bus registry
+  _buses={};
+  _gateBoxes=[];
+  _busTop=BUS_TOP;_busBot=BUS_BOT;
+  const IV_COLOR='#1d4ed8',IVN_COLOR='#6d28d9',Q_COLOR='#15803d';
+  ivv.forEach((v,i)=>{
+    _buses[v]={x:ivBusX[i],color:IV_COLOR};
+    _buses[v+"'"]={x:ivnBusX[i],color:IVN_COLOR};
+  });
+  ffN.forEach((nm,i)=>{
+    _buses[nm]={x:qBusX[i],color:Q_COLOR};
+    _buses[nm+"'"]={x:qBusX[i]+5,color:Q_COLOR};
+  });
+
+  let s='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'"'
+      +' viewBox="0 0 '+W+' '+H+'"'
+      +' style="background:#fff;border:1px solid #d1d5db;border-radius:5px;">';
+  s+='<defs><marker id="ah" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">'
+    +'<path d="M0,0 L0,6 L6,3z" fill="#374151"/></marker></defs>';
+
+  // Title
+  s+='<text x="'+(W/2)+'" y="14" text-anchor="middle" font-size="10"'
+    +' font-family="\'Segoe UI\',Arial" fill="#9ca3af">'
+    +fft+' FF &nbsp;|&nbsp; '+S.mdl
+    +' &nbsp;|&nbsp; '+Object.entries(enc).map(([st,c])=>st+'='+bs(c,nB)).join('  ')
+    +'</text>';
+
+  // ── Input buses with X' NOT gates ──
+  // Layout (per input variable i):
+  //   ivBusX[i]     = X vertical bus
+  //   notGx         = ivBusX[i] + 20  (NOT gate body starts here)
+  //   notOutX       = notGx + NW + 4  (NOT gate output)
+  //   ivnBusX[i]    = notOutX + 6     (X' bus column)
+  //
+  //  [X bus]--tap-wire--[NOT gate]--wire--[X' bus]
+  //
+  const NOT_NW=28, NOT_NH=20;
+  ivv.forEach((v,i)=>{
+    // X bus (full height)
+    s+=drawBus(ivBusX[i],v,BUS_TOP,BUS_BOT,IV_COLOR);
+
+    // NOT gate: drawn at a fixed Y near the top of the bus area
+    const notCY=BUS_TOP+28+i*26;      // Y center of NOT gate
+    const notGx=ivBusX[i]+20;         // NOT gate left face (20px right of X bus)
+    const notGy=notCY-NOT_NH/2;       // NOT gate top edge
+
+    // Short horizontal tap wire: X bus → NOT gate input
+    s+=tapBus(ivBusX[i],notCY,notGx,IV_COLOR);
+
+    // NOT gate body
+    s+=notG(notGx,notGy,NOT_NW,NOT_NH);
+
+    // NOT gate output x = notGx + NW - 1 (tip of bubble, NW=28 so bubble at x+23, r=4 → tip at notGx+NW+4-1=notGx+31)
+    // notG draws: polygon to x+NW-5, circle cx=x+NW-1 r=4 → rightmost point = notGx+NW-1+4 = notGx+NW+3
+    const notOutX = notGx + NOT_NW + 3;  // exact tip of NOT gate bubble
+
+    // Short connecting wire from NOT output to X' bus (only if xpBusX > notOutX)
+    const xpBusX = notOutX + 2;   // X' bus starts immediately after NOT output
+
+    // No horizontal wire needed — bus starts right at NOT output
+    // X' bus starts from the NOT gate output level downward
+    const xpBusTop = notCY + 12;
+    s += drawBus(xpBusX, '', xpBusTop, BUS_BOT, IVN_COLOR);
+
+    // X' label: float 20px ABOVE the bus top so it never overlaps the gate
+    s += '<text x="' + xpBusX + '" y="' + (notCY - NOT_NH/2 - 8) + '"'
+       + ' text-anchor="middle" font-size="10" font-family="Segoe UI,Arial"'
+       + ' fill="' + IVN_COLOR + '" font-weight="700">' + v + "'" + '</text>';
+  });
+
+  // ── State variable (Q) buses ──
+  ffN.forEach((nm,i)=>{
+    s+=drawBus(qBusX[i],'',BUS_TOP,BUS_BOT,Q_COLOR);
+    // Stagger labels: alternate vertical offset so adjacent labels don't overlap
+    const labelY=BUS_TOP-16+(i%2)*13;
+    s+='<text x="'+qBusX[i]+'" y="'+labelY+'" text-anchor="middle" font-size="10"'
+      +' font-family="\'Segoe UI\',Arial" fill="'+Q_COLOR+'" font-weight="700">'+nm+'</text>';
+  });
+
+  // Gate area separator
+  s+='<line x1="'+(GATE_LEFT-5)+'" y1="'+BUS_TOP+'" x2="'+(GATE_LEFT-5)+'" y2="'+BUS_BOT
+    +'" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="3,3"/>';
+
+  // ── FF boxes and gate networks ──
+  ffN.forEach((nm,fi)=>{
+    const rowTop=TOP+fi*ROW;
+    const ffY=rowTop+16;
+    const pin1Y=ffY+pinCfg.p1;
+    const pin2Y=pinCfg.p2!==null?(ffY+pinCfg.p2):null;
+    const clkPinY=ffY+pinCfg.clk;
+    const pinNum=nm.replace(/[^0-9]/g,'');
+    const qOutX=FFX+FFW+44;
+
+    // FF box
+    s+='<rect x="'+FFX+'" y="'+ffY+'" width="'+FFW+'" height="'+pinCfg.h+'" class="ffr" rx="3"/>';
+    s+='<text x="'+(FFX+FFW/2)+'" y="'+(ffY+15)+'" text-anchor="middle" class="fft" font-weight="700">'+fft+'</text>';
+    s+='<text x="'+(FFX+FFW/2)+'" y="'+(ffY+27)+'" text-anchor="middle" class="fft" font-size="9" fill="#6b7280">FF</text>';
+
+    // CLK pin (shared)
+    s+='<text x="'+(FFX+5)+'" y="'+(clkPinY+4)+'" class="fft" fill="#b45309">CLK</text>';
+    s+='<line x1="'+STUB_X+'" y1="'+clkPinY+'" x2="'+FFX+'" y2="'+clkPinY+'" class="wrclk"/>';
+
+    // Q output (shared)
+    s+='<text x="'+(FFX+FFW-5)+'" y="'+(pin1Y+4)+'" text-anchor="end" class="fft" fill="#15803d">Q</text>';
+    s+='<line x1="'+(FFX+FFW)+'" y1="'+pin1Y+'" x2="'+qOutX+'" y2="'+pin1Y+'" class="wr" marker-end="url(#ah)"/>';
+    s+='<text x="'+(qOutX+3)+'" y="'+(pin1Y+4)+'" class="sl" fill="#15803d">'+nm+'</text>';
+
+    if(fft==='JK'){
+      s+='<text x="'+(FFX+5)+'" y="'+(pin1Y+4)+'" class="fft">J</text>';
+      s+='<line x1="'+STUB_X+'" y1="'+pin1Y+'" x2="'+FFX+'" y2="'+pin1Y+'" class="wr"/>';
+      s+='<text x="'+(STUB_X-26)+'" y="'+(pin1Y-3)+'" font-size="9" fill="#2563eb" font-family="\'Segoe UI\',Arial">J'+pinNum+'</text>';
+      s+='<text x="'+(FFX+5)+'" y="'+(pin2Y+4)+'" class="fft">K</text>';
+      s+='<line x1="'+STUB_X+'" y1="'+pin2Y+'" x2="'+FFX+'" y2="'+pin2Y+'" class="wr"/>';
+      s+='<text x="'+(FFX+FFW-5)+'" y="'+(pin2Y+4)+'" text-anchor="end" class="fft" fill="#dc2626">Q\'</text>';
+      s+='<line x1="'+(FFX+FFW)+'" y1="'+pin2Y+'" x2="'+(FFX+FFW+30)+'" y2="'+pin2Y+'" class="wr"/>';
+      s+='<text x="'+(FFX+FFW+32)+'" y="'+(pin2Y+4)+'" class="sl" fill="#dc2626" font-size="10">'+nm+'\'</text>';
+      s+='<text x="'+(STUB_X-26)+'" y="'+(pin2Y-3)+'" font-size="9" fill="#dc2626" font-family="\'Segoe UI\',Arial">K'+pinNum+'</text>';
+
+      const J_cy=rowTop+ROW*0.27;
+      const K_cy=rowTop+ROW*0.73;
+      const jL=layoutBus(parseEq(eqs['J_'+nm]||'0'),GATE_LEFT,GATE_RIGHT,J_cy);
+      const kL=layoutBus(parseEq(eqs['K_'+nm]||'0'),GATE_LEFT,GATE_RIGHT,K_cy);
+      s+=jL.elms;s+=wireToPin(jL.ox,jL.oy,STUB_X,pin1Y);
+      s+=kL.elms;s+=wireToPin(kL.ox,kL.oy,STUB_X,pin2Y);
+
+    }else if(fft==='T'){
+      s+='<text x="'+(FFX+5)+'" y="'+(pin1Y+4)+'" class="fft" fill="#7c3aed">T</text>';
+      s+='<line x1="'+STUB_X+'" y1="'+pin1Y+'" x2="'+FFX+'" y2="'+pin1Y+'" class="wr"/>';
+      s+='<text x="'+(STUB_X-24)+'" y="'+(pin1Y-3)+'" font-size="9" fill="#7c3aed" font-family="\'Segoe UI\',Arial">T'+pinNum+'</text>';
+      const T_cy=rowTop+ROW*0.5;
+      const tL=layoutBus(parseEq(eqs['T_'+nm]||'0'),GATE_LEFT,GATE_RIGHT,T_cy);
+      s+=tL.elms;s+=wireToPin(tL.ox,tL.oy,STUB_X,pin1Y);
+
+    }else if(fft==='D'){
+      s+='<text x="'+(FFX+5)+'" y="'+(pin1Y+4)+'" class="fft" fill="#0891b2">D</text>';
+      s+='<line x1="'+STUB_X+'" y1="'+pin1Y+'" x2="'+FFX+'" y2="'+pin1Y+'" class="wr"/>';
+      s+='<text x="'+(STUB_X-24)+'" y="'+(pin1Y-3)+'" font-size="9" fill="#0891b2" font-family="\'Segoe UI\',Arial">D'+pinNum+'</text>';
+      const D_cy=rowTop+ROW*0.5;
+      const dL=layoutBus(parseEq(eqs['D_'+nm]||'0'),GATE_LEFT,GATE_RIGHT,D_cy);
+      s+=dL.elms;s+=wireToPin(dL.ox,dL.oy,STUB_X,pin1Y);
+
+    }else if(fft==='SR'){
+      s+='<text x="'+(FFX+5)+'" y="'+(pin1Y+4)+'" class="fft" fill="#16a34a">S</text>';
+      s+='<line x1="'+STUB_X+'" y1="'+pin1Y+'" x2="'+FFX+'" y2="'+pin1Y+'" class="wr"/>';
+      s+='<text x="'+(STUB_X-26)+'" y="'+(pin1Y-3)+'" font-size="9" fill="#16a34a" font-family="\'Segoe UI\',Arial">S'+pinNum+'</text>';
+      s+='<text x="'+(FFX+5)+'" y="'+(pin2Y+4)+'" class="fft" fill="#dc2626">R</text>';
+      s+='<line x1="'+STUB_X+'" y1="'+pin2Y+'" x2="'+FFX+'" y2="'+pin2Y+'" class="wr"/>';
+      s+='<text x="'+(FFX+FFW-5)+'" y="'+(pin2Y+4)+'" text-anchor="end" class="fft" fill="#dc2626">Q\'</text>';
+      s+='<line x1="'+(FFX+FFW)+'" y1="'+pin2Y+'" x2="'+(FFX+FFW+30)+'" y2="'+pin2Y+'" class="wr"/>';
+      s+='<text x="'+(FFX+FFW+32)+'" y="'+(pin2Y+4)+'" class="sl" fill="#dc2626" font-size="10">'+nm+'\'</text>';
+      s+='<text x="'+(STUB_X-26)+'" y="'+(pin2Y-3)+'" font-size="9" fill="#dc2626" font-family="\'Segoe UI\',Arial">R'+pinNum+'</text>';
+
+      const S_cy=rowTop+ROW*0.27;
+      const R_cy=rowTop+ROW*0.73;
+      const sL=layoutBus(parseEq(eqs['S_'+nm]||'0'),GATE_LEFT,GATE_RIGHT,S_cy);
+      const rL=layoutBus(parseEq(eqs['R_'+nm]||'0'),GATE_LEFT,GATE_RIGHT,R_cy);
+      s+=sL.elms;s+=wireToPin(sL.ox,sL.oy,STUB_X,pin1Y);
+      s+=rL.elms;s+=wireToPin(rL.ox,rL.oy,STUB_X,pin2Y);
+    }
+
+    // State feedback Q → Q bus (dashed)
+    const fbColX=qOutX+8+fi*14;
+    const fbRetY=BUS_BOT+4+fi*14;
+    s+='<circle cx="'+qOutX+'" cy="'+pin1Y+'" r="3" fill="#374151"/>';
+    s+='<line x1="'+qOutX+'" y1="'+pin1Y+'" x2="'+fbColX+'" y2="'+pin1Y+'" class="wrfb"/>';
+    s+='<line x1="'+fbColX+'" y1="'+pin1Y+'" x2="'+fbColX+'" y2="'+fbRetY+'" class="wrfb"/>';
+    s+='<line x1="'+fbColX+'" y1="'+fbRetY+'" x2="'+qBusX[fi]+'" y2="'+fbRetY+'" class="wrfb"/>';
+    s+='<line x1="'+qBusX[fi]+'" y1="'+fbRetY+'" x2="'+qBusX[fi]+'" y2="'+BUS_BOT+'" class="wrfb"/>';
+    s+='<circle cx="'+qBusX[fi]+'" cy="'+BUS_BOT+'" r="3" fill="#15803d" opacity=".7"/>';
+  });
+
+  // ── Output Z gate network ──
+  // Constrain the Z-gate tree to the SAME gateRight bound (GATE_RIGHT) used
+  // by every J/K/T/D/S/R network, so it can never extend rightward into the
+  // dropX/STUB_X column where CLK drop lines travel. The final gate output
+  // is then carried across to the right margin by a plain wire (not part of
+  // the gate tree), which is safe to cross dropX since it's just a line.
+  ovv.forEach((v,i)=>{
+    const zy=TOP+ffc*ROW+20+i*46;
+    const zL=layoutBus(parseEq(eqs['Z_'+v]||'0'),GATE_LEFT,GATE_RIGHT,zy);
+    s+=zL.elms;
+    s+='<line x1="'+zL.ox+'" y1="'+zy+'" x2="'+(W-26)+'" y2="'+zy+'" class="wr" marker-end="url(#ah)"/>';
+    s+='<text x="'+(W-22)+'" y="'+(zy+4)+'" class="sl" fill="#b45309">'+v+'</text>';
+  });
+
+  // ── CLK bus (horizontal, bottom) ──
+  const clkY=H-22;
+  s+='<line x1="28" y1="'+clkY+'" x2="'+(W-30)+'" y2="'+clkY+'" class="wrclk"/>';
+  s+='<text x="8" y="'+(clkY-3)+'" font-size="10" font-family="\'Segoe UI\',Arial" fill="#b45309" font-weight="700">CLK</text>';
+  // CLK drops: each FF gets a vertical line from CLK pin stub straight down
+  // to the CLK bus, staying at dropX (just left of STUB_X, between the gate
+  // area and the FF box — a column where only stub wires live, never gates).
+  // The Z-output gate network is confined to GATE_LEFT..(FFX+FFW+12), and
+  // dropX = STUB_X+2+fi*2 ≈ FFX-12, which sits safely between the gate area
+  // and the FF box for the FULL height of the diagram — including past the
+  // last FF row where the Z-output gates are drawn — because the Z-output
+  // gates terminate at FFX+FFW+12 on their right, i.e. firmly to the RIGHT
+  // of dropX, never crossing it.
+  ffN.forEach((_,fi)=>{
+    const ffY=TOP+fi*ROW+16;
+    const clkPinY=ffY+pinCfg.clk;
+    const dropX=STUB_X+2+fi*2;
+    s+='<line x1="'+dropX+'" y1="'+clkPinY+'" x2="'+dropX+'" y2="'+clkY+'" class="wrclk"/>';
+    s+='<circle cx="'+dropX+'" cy="'+clkY+'" r="3" fill="#b45309"/>';
+  });
+
+  s+='<text x="10" y="'+(H-6)+'" font-size="9" font-family="\'Segoe UI\',Arial" fill="#9ca3af">'
+    +'&#8226; Blue=X bus &nbsp;&#8226; Purple=X\' bus &nbsp;&#8226; Green=Q feedback &nbsp;&#8226; Orange=CLK'
+    +'</text>';
+  s+='</svg>';
+  return s;
+}
+
+// ═══════════════════════════════════════════════
+// State Diagram
+// ═══════════════════════════════════════════════
+function buildSD(rows,mdl,ivv,ovv){
+  const states=[...new Set(rows.map(r=>r.ps))].sort();
+  const n=states.length;
+  if(!n)return'<p style="color:#9ca3af;padding:20px">No states.</p>';
+  const CX=300,CY=210,R2=155,CR=30,W=610,H=440;
+  let s='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" style="background:#fff;">';
+  s+='<defs><marker id="sah" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5z" fill="#374151"/></marker></defs>';
+  const pos={};
+  states.forEach((st,i)=>{const a=(2*Math.PI*i/n)-Math.PI/2;pos[st]={x:CX+R2*Math.cos(a),y:CY+R2*Math.sin(a)};});
+  rows.forEach(row=>{
+    if(!pos[row.ps]||!pos[row.ns])return;
+    const p=pos[row.ps],q=pos[row.ns];
+    const inp=ivv.map(v=>row.inputs[v]??'?').join('');
+    const out=ovv.map(v=>row.outputs[v]??'?').join('');
+    const lbl=mdl==='Mealy'?inp+'/'+out:inp;
+    if(row.ps===row.ns){
+      s+='<path d="M'+(p.x-CR/2)+','+(p.y-CR)+' Q'+(p.x-CR*2.1)+','+(p.y-CR*2.3)+' '+(p.x+CR/2)+','+(p.y-CR)+'" fill="none" stroke="#374151" stroke-width="1.5" marker-end="url(#sah)"/>';
+      s+='<text x="'+p.x+'" y="'+(p.y-CR*2.2)+'" text-anchor="middle" font-size="10" font-family="\'Segoe UI\',Arial" fill="#374151">'+lbl+'</text>';
+    }else{
+      const dx=q.x-p.x,dy=q.y-p.y,dist=Math.sqrt(dx*dx+dy*dy);
+      const ux=dx/dist,uy=dy/dist;
+      const sx=p.x+ux*CR,sy=p.y+uy*CR,ex=q.x-ux*(CR+2),ey=q.y-uy*(CR+2);
+      const mx=(sx+ex)/2-uy*24,my=(sy+ey)/2+ux*24;
+      s+='<path d="M'+sx+','+sy+' Q'+mx+','+my+' '+ex+','+ey+'" fill="none" stroke="#374151" stroke-width="1.5" marker-end="url(#sah)"/>';
+      s+='<text x="'+mx+'" y="'+(my-7)+'" text-anchor="middle" font-size="10" font-family="\'Segoe UI\',Arial" fill="#2563eb">'+lbl+'</text>';
+    }
+  });
+  states.forEach((st,i)=>{
+    const p=pos[st];
+    s+='<circle cx="'+p.x+'" cy="'+p.y+'" r="'+CR+'" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>';
+    if(i===0)s+='<circle cx="'+p.x+'" cy="'+p.y+'" r="'+(CR-4)+'" fill="none" stroke="#2563eb" stroke-width="1"/>';
+    s+='<text x="'+p.x+'" y="'+(p.y+(mdl==='Moore'?-5:4))+'" text-anchor="middle" dominant-baseline="central" font-size="12" font-family="\'Courier New\',monospace" fill="#1d4ed8" font-weight="700">'+st+'</text>';
+    if(mdl==='Moore'){
+      const r2=rows.filter(r=>r.ps===st);
+      if(r2.length){const out=ovv.map(v=>r2[0].outputs[v]??'?').join('');s+='<text x="'+p.x+'" y="'+(p.y+10)+'" text-anchor="middle" font-size="10" font-family="\'Segoe UI\',Arial" fill="#15803d">'+out+'</text>';}
+    }
+  });
+  s+='</svg>';return s;
+}
+
+// ═══════════════════════════════════════════════
+// Timing Diagram
+// ═══════════════════════════════════════════════
+function runTD(){
+  const seq=document.getElementById('tseq').value.split(',').map(s=>s.trim()).filter(s=>s==='0'||s==='1').map(Number);
+  if(!seq.length){showToast('Invalid sequence');return;}
+  if(!S.res){showToast('Generate first');return;}
+  const{enc,nB,ffN}=S.res,ivv=giv(),ovv=gov();
+  let cur=Object.keys(enc)[0];
+  const trace={x:[],qs:{},z:[]};ffN.forEach(n=>trace.qs[n]=[]);
+  seq.forEach(xv=>{
+    trace.x.push(xv);
+    const code=enc[cur]??0;ffN.forEach((n,bi)=>trace.qs[n].push((code>>(nB-1-bi))&1));
+    const row=S.tbl.find(r=>r.ps===cur&&ivv.every(v=>String(r.inputs[v])===String(xv)));
+    let z=0;if(row){z=parseInt(row.outputs[ovv[0]]??0)||0;cur=row.ns;}
+    trace.z.push(z);
+  });
+  const code2=enc[cur]??0;ffN.forEach((n,bi)=>trace.qs[n].push((code2>>(nB-1-bi))&1));
+  trace.z.push(trace.z[trace.z.length-1]||0);trace.x.push(trace.x[trace.x.length-1]||0);
+  const sigLabels=['X (Input)',...ffN.map(n=>n+' (State)'),'Z (Output)'];
+  const sigData=[trace.x,...Object.values(trace.qs),trace.z];
+  const sigCols=['#2563eb',...ffN.map(()=>'#15803d'),'#b45309'];
+  const n=seq.length,SH=32,SG=8,LEFT=76,CELL=46,T=18;
+  const W=LEFT+n*CELL+44,H=T+sigData.length*(SH+SG)+28;
+  let svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+Math.max(W,420)+'" height="'+H+'" style="background:#fff;border:1px solid #e5e7eb;border-radius:4px;">';
+  for(let i=0;i<=n;i++){
+    svg+='<line x1="'+(LEFT+i*CELL)+'" y1="'+(T-5)+'" x2="'+(LEFT+i*CELL)+'" y2="'+(H-20)+'" stroke="#f3f4f6" stroke-width="1"/>';
+    if(i<n)svg+='<text x="'+(LEFT+i*CELL+CELL/2)+'" y="'+(H-7)+'" text-anchor="middle" font-size="9" font-family="\'Segoe UI\',Arial" fill="#9ca3af">t'+i+'</text>';
+  }
+  sigData.forEach((data,si)=>{
+    const baseY=T+si*(SH+SG)+SH;const hi=baseY-SH+5,lo=baseY-5;
+    svg+='<text x="'+(LEFT-4)+'" y="'+(baseY-SH/2+4)+'" text-anchor="end" font-size="10" font-family="\'Segoe UI\',Arial" fill="'+sigCols[si]+'">'+sigLabels[si]+'</text>';
+    let path='M'+LEFT+','+(data[0]?hi:lo);
+    for(let i=0;i<data.length;i++){
+      const x2=LEFT+(i+1)*CELL;if(x2>LEFT+n*CELL+2)break;
+      const y=data[i]?hi:lo,yn=i+1<data.length?(data[i+1]?hi:lo):y;
+      path+=' L'+(x2-1)+','+y;if(yn!==y)path+=' L'+x2+','+yn;
+    }
+    svg+='<path d="'+path+'" fill="none" stroke="'+sigCols[si]+'" stroke-width="2"/>';
+    for(let i=0;i<Math.min(data.length,n);i++){
+      svg+='<text x="'+(LEFT+i*CELL+CELL/2)+'" y="'+(data[i]?hi+11:lo-4)+'" text-anchor="middle" font-size="9" fill="'+sigCols[si]+'" opacity=".7">'+data[i]+'</text>';
+    }
+  });
+  svg+='</svg>';
+  document.getElementById('tdo').innerHTML=svg;
+}
+
+// ═══════════════════════════════════════════════
+// View switching
+// ═══════════════════════════════════════════════
+function swView(v){
+  const btnMap={circuit:'bc',state:'bsd',timing:'btd',bom:'bbom'};
+  Object.keys(btnMap).forEach(k=>{
+    const el=document.getElementById(btnMap[k]);
+    if(el)el.classList.toggle('on',k===v);
+  });
+  if(v==='state'){
+    if(!S.res){showToast('Generate first.');return;}
+    document.getElementById('sdb').innerHTML=buildSD(S.tbl,S.mdl,giv(),gov());
+    document.getElementById('sdm').classList.add('sh');
+  }else if(v==='timing'){
+    document.getElementById('tdm').classList.add('sh');
+    if(S.res)runTD();
+  }else if(v==='bom'){
+    if(!S.res){showToast('Generate first.');return;}
+    showBOM();
+  }else if(v==='circuit'){
+    if(!S.res){showToast('Generate first.');return;}
+    const cc=document.getElementById('cc');
+    if(!S._lastCircuit){
+      S._lastCircuit=buildCircuit(S.res,S.fft,giv(),gov());
+    }
+    cc.innerHTML=S._lastCircuit;
+    cc.style.display='block';
+    cc.style.transform='scale('+S.zoom+')';
+    cc.style.transformOrigin='top left';
+    document.getElementById('ph').style.display='none';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// BOM
+// ═══════════════════════════════════════════════
+function countGates(node,counts){
+  if(!node)return;
+  if(node.op==='AND'){counts.and++;(node.args||[]).forEach(a=>countGates(a,counts));}
+  else if(node.op==='OR'){counts.or++;(node.args||[]).forEach(a=>countGates(a,counts));}
+  else if(node.op==='NOT'){counts.not++;countGates(node.arg,counts);}
+}
+function buildBOM(res,fft){
+  const{eqs,ffN}=res;
+  const counts={and:0,or:0,not:0};
+  Object.keys(eqs).forEach(k=>countGates(parseEq(eqs[k]||'0'),counts));
+  const ffTypeLabel=fft==='SR'?'SR Flip-Flop':fft==='D'?'D Flip-Flop':fft==='T'?'T Flip-Flop (JK wired)':'JK Flip-Flop';
+  const ffIcLabel=fft==='D'?'74LS74':fft==='SR'?'74LS00 (NAND as SR)':'74LS76';
+  const ffCount=ffN.length;
+  const ceil=Math.ceil;
+  const bom=[
+    {part:'AND Gate',ic:'74LS08',desc:'Quad 2-input AND',gatesUsed:counts.and,perIC:4,icNeeded:counts.and>0?ceil(counts.and/4):0,highlight:counts.and>0},
+    {part:'OR Gate', ic:'74LS32',desc:'Quad 2-input OR', gatesUsed:counts.or, perIC:4,icNeeded:counts.or>0?ceil(counts.or/4):0,  highlight:counts.or>0},
+    {part:'NOT Gate',ic:'74LS04',desc:'Hex Inverter',    gatesUsed:counts.not,perIC:6,icNeeded:counts.not>0?ceil(counts.not/6):0,highlight:counts.not>0},
+    {part:ffTypeLabel,ic:ffIcLabel,
+     desc:fft==='D'?'Dual D FF (74LS74)':fft==='SR'?'Quad NAND as SR latch':'Dual JK FF w/ preset/clear',
+     gatesUsed:ffCount,perIC:2,icNeeded:ceil(ffCount/2),highlight:true},
+  ];
+  const needed=bom.filter(r=>r.icNeeded>0);
+  const totalICs=needed.reduce((s,r)=>s+r.icNeeded,0);
+  let html=`<div style="padding:4px 0 12px;">
+  <div style="font-size:11px;color:#6b7280;margin-bottom:10px;">
+    AND: <strong>${counts.and}</strong> &nbsp;|&nbsp; OR: <strong>${counts.or}</strong> &nbsp;|&nbsp;
+    NOT: <strong>${counts.not}</strong> &nbsp;|&nbsp; FF: <strong>${ffCount}</strong>
+    &nbsp;→&nbsp; Total ICs: <strong style="color:#1d4ed8">${totalICs}</strong>
+  </div>
+  <table style="width:100%;border-collapse:collapse;font-size:12px;">
+  <thead><tr style="background:#f3f4f6;">
+    <th style="border:1px solid #d1d5db;padding:6px 10px;text-align:left">Element</th>
+    <th style="border:1px solid #d1d5db;padding:6px 10px;text-align:left">74-Series IC</th>
+    <th style="border:1px solid #d1d5db;padding:6px 10px;text-align:left">Description</th>
+    <th style="border:1px solid #d1d5db;padding:6px 10px;text-align:center">Used</th>
+    <th style="border:1px solid #d1d5db;padding:6px 10px;text-align:center">Per IC</th>
+    <th style="border:1px solid #d1d5db;padding:6px 10px;text-align:center;color:#1d4ed8">Needed</th>
+  </tr></thead><tbody>`;
+  bom.forEach(r=>{
+    const rs=r.highlight&&r.icNeeded>0?'background:#eff6ff;':r.icNeeded===0?'color:#9ca3af;':'';
+    html+=`<tr style="${rs}">
+      <td style="border:1px solid #d1d5db;padding:6px 10px">${r.part}</td>
+      <td style="border:1px solid #d1d5db;padding:6px 10px;font-family:'Courier New',monospace;font-weight:600;color:#1d4ed8">${r.ic}</td>
+      <td style="border:1px solid #d1d5db;padding:6px 10px;font-size:11px;color:#6b7280">${r.desc}</td>
+      <td style="border:1px solid #d1d5db;padding:6px 10px;text-align:center">${r.gatesUsed}</td>
+      <td style="border:1px solid #d1d5db;padding:6px 10px;text-align:center;color:#6b7280">${r.perIC}</td>
+      <td style="border:1px solid #d1d5db;padding:6px 10px;text-align:center;font-weight:700;color:${r.icNeeded>0?'#1d4ed8':'#9ca3af'}">${r.icNeeded}</td>
+    </tr>`;
+  });
+  html+=`</tbody></table>
+  <div style="margin-top:12px;padding:10px 12px;background:#f0fdf4;border:1px solid #86efac;border-radius:5px;font-size:11px;color:#15803d;">
+    <strong>&#128204; Shopping List:</strong><br>
+    ${needed.map(r=>`${r.icNeeded}x <strong>${r.ic}</strong>`).join(' + ')}
+    = <strong>${totalICs} IC${totalICs!==1?'s':''} total</strong>
+  </div></div>`;
+  return html;
+}
+function showBOM(){
+  const cc=document.getElementById('cc');
+  cc.style.display='block';cc.style.transform='scale(1)';
+  document.getElementById('ph').style.display='none';
+  cc.innerHTML=buildBOM(S.res,S.fft);
+}
+function closeMdl(id){document.getElementById(id).classList.remove('sh');}
+document.querySelectorAll('.ov').forEach(el=>el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('sh');}));
+
+// ═══════════════════════════════════════════════
+// Generate
+// ═══════════════════════════════════════════════
+function doGen(){
+  hideToast();
+  const ivv=giv(),ovv=gov(),rows=S.tbl;
+  if(!rows.length){showToast('State table is empty.');return;}
+  try{
+    const res=derive(rows,S.mdl,S.fft,ivv,ovv);
+    S.res=res;
+    renderEq(res);
+    const keys=Object.keys(res.kmd);S.kmap=keys[0]||null;
+    document.getElementById('ktabs').innerHTML=keys.map(k=>'<button class="ktb'+(k===S.kmap?' on':'')+'\" data-key="'+k+'" onclick="swKmap(\''+k+'\')">'+k+'</button>').join('');
+    if(S.kmap)renderKmap(S.kmap);
+    const circ=buildCircuit(res,S.fft,ivv,ovv);
+    S._lastCircuit=circ;
+    const cc=document.getElementById('cc');
+    cc.innerHTML=circ;cc.style.display='block';
+    cc.style.transform='scale('+S.zoom+')';cc.style.transformOrigin='top left';
+    document.getElementById('ph').style.display='none';
+    document.getElementById('bc').classList.add('on');
+    ['bsd','btd','bbom'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('on');});
+  }catch(e){showToast(e.message);}
+}
+
+// ═══════════════════════════════════════════════
+// Zoom
+// ═══════════════════════════════════════════════
+function chZoom(d){S.zoom=Math.max(.3,Math.min(2.5,S.zoom+d));applyZoom();}
+function rstZoom(){S.zoom=1;applyZoom();}
+function applyZoom(){
+  document.getElementById('zl').textContent=Math.round(S.zoom*100)+'%';
+  const cc=document.getElementById('cc');
+  cc.style.transform='scale('+S.zoom+')';cc.style.transformOrigin='top left';
+}
+
+// ═══════════════════════════════════════════════
+// PDF Export using html2pdf.js
+// ═══════════════════════════════════════════════
+function doExport(){
+  if(!S.res){showToast('Generate first.');return;}
+  showToast('Building PDF report…');
+
+  const ivv=giv(),ovv=gov();
+  const{eqs,ffN,enc,nB}=S.res;
+
+  // ── Build report HTML ──
+  const container=document.createElement('div');
+  container.style.cssText='width:800px;padding:32px;font-family:\'Segoe UI\',Arial,sans-serif;background:#fff;color:#111827;';
+
+  // Title
+  container.innerHTML=`
+  <div style="border-bottom:3px solid #1d4ed8;padding-bottom:12px;margin-bottom:24px;">
+    <h1 style="font-size:22px;font-weight:800;color:#1d4ed8;margin:0;">Sequential Circuit Design Report</h1>
+    <div style="font-size:13px;color:#6b7280;margin-top:4px;">
+      Model: <strong>${S.mdl}</strong> &nbsp;|&nbsp;
+      FF Type: <strong>${S.fft}</strong> &nbsp;|&nbsp;
+      Inputs: <strong>${ivv.join(',')}</strong> &nbsp;|&nbsp;
+      Outputs: <strong>${ovv.join(',')}</strong>
+    </div>
+  </div>
+
+  <!-- State Encoding -->
+  <h2 style="font-size:14px;font-weight:700;margin:0 0 8px;color:#374151;">State Encoding</h2>
+  <div style="font-family:'Courier New',monospace;font-size:12px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:4px;padding:8px 12px;margin-bottom:20px;">
+    ${Object.entries(enc).map(([s,c])=>`${s} = ${bs(c,nB)}`).join('&nbsp;&nbsp;&nbsp;')}
+  </div>
+
+  <!-- Equations -->
+  <h2 style="font-size:14px;font-weight:700;margin:0 0 8px;color:#374151;">Flip-Flop Input Equations</h2>
+  <div id="pdf-eq" style="margin-bottom:20px;">${document.getElementById('ep').innerHTML}</div>
+
+  <!-- State Table -->
+  <h2 style="font-size:14px;font-weight:700;margin:0 0 8px;color:#374151;">State Table</h2>
+  <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:20px;">
+    <thead>
+      <tr style="background:#f3f4f6;">
+        <th style="border:1px solid #d1d5db;padding:5px 10px;">Present State</th>
+        ${ivv.map(v=>`<th style="border:1px solid #d1d5db;padding:5px 10px;color:#1d4ed8">${v}</th>`).join('')}
+        <th style="border:1px solid #d1d5db;padding:5px 10px;">Next State</th>
+        ${ovv.map(v=>`<th style="border:1px solid #d1d5db;padding:5px 10px;color:#b45309">${v}</th>`).join('')}
+      </tr>
+    </thead>
+    <tbody>
+      ${S.tbl.map(r=>`<tr>
+        <td style="border:1px solid #d1d5db;padding:4px 10px;text-align:center">${r.ps}</td>
+        ${ivv.map(v=>`<td style="border:1px solid #d1d5db;padding:4px 10px;text-align:center;color:#1d4ed8">${r.inputs[v]??'0'}</td>`).join('')}
+        <td style="border:1px solid #d1d5db;padding:4px 10px;text-align:center">${r.ns}</td>
+        ${ovv.map(v=>`<td style="border:1px solid #d1d5db;padding:4px 10px;text-align:center;color:#b45309">${r.outputs[v]??'0'}</td>`).join('')}
+      </tr>`).join('')}
+    </tbody>
+  </table>
+
+  <!-- BOM -->
+  <h2 style="font-size:14px;font-weight:700;margin:0 0 8px;color:#374151;">Bill of Materials (74-Series ICs)</h2>
+  <div style="margin-bottom:20px;">${buildBOM(S.res,S.fft)}</div>
+
+  <!-- Circuit Diagram -->
+  <h2 style="font-size:14px;font-weight:700;margin:0 0 8px;color:#374151;">Sequential Circuit Diagram</h2>
+  <div style="margin-bottom:20px;overflow:hidden;">${S._lastCircuit||buildCircuit(S.res,S.fft,ivv,ovv)}</div>
+
+  <!-- State Diagram -->
+  <h2 style="font-size:14px;font-weight:700;margin:0 0 8px;color:#374151;">State Diagram</h2>
+  <div>${buildSD(S.tbl,S.mdl,ivv,ovv)}</div>
+
+  <div style="margin-top:28px;border-top:1px solid #e5e7eb;padding-top:10px;font-size:10px;color:#9ca3af;text-align:center;">
+    Generated by Sequential Circuit Design Automation System &nbsp;|&nbsp; ${new Date().toLocaleDateString()}
+  </div>`;
+
+  document.body.appendChild(container);
+
+  const opt={
+    margin:[10,10,10,10],
+    filename:'sequential-circuit-report.pdf',
+    image:{type:'jpeg',quality:0.97},
+    html2canvas:{scale:2,useCORS:true,logging:false},
+    jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+    pagebreak:{mode:['avoid-all','css','legacy']}
+  };
+
+  html2pdf().set(opt).from(container).save().then(()=>{
+    document.body.removeChild(container);
+    showToast('PDF downloaded!');
+  }).catch(err=>{
+    document.body.removeChild(container);
+    showToast('PDF error: '+err.message);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// Toast
+// ═══════════════════════════════════════════════
+let tT;
+function showToast(m){const t=document.getElementById('toast');t.textContent='\u26a0 '+m;t.style.display='block';clearTimeout(tT);tT=setTimeout(hideToast,4000);}
+function hideToast(){document.getElementById('toast').style.display='none';}
+
+// ── Init ──
+setMdl('Mealy');setFF('JK');loadEx();
+</script>
+</body>
+</html>
